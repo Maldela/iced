@@ -1,5 +1,5 @@
 use crate::{Primitive, Renderer, SliderStyle};
-use iced_native::{slider, MouseCursor, Point, Rectangle};
+use iced_native::{slider, Color, MouseCursor, Point, Rectangle};
 
 impl slider::Renderer for Renderer {
     type WidgetStyle = SliderStyle;
@@ -43,6 +43,8 @@ impl slider::Renderer for Renderer {
                 },
                 background: style.rail_top_color.into(),
                 border_radius: 0,
+                border_width: 0,
+                border_color: Color::BLACK
             },
             Primitive::Quad {
                 bounds: Rectangle {
@@ -53,6 +55,8 @@ impl slider::Renderer for Renderer {
                 },
                 background: style.rail_bottom_color.into(),
                 border_radius: 1,
+                border_width: 0,
+                border_color: Color::BLACK
             },
         );
 
@@ -76,35 +80,22 @@ impl slider::Renderer for Renderer {
             }
         };
 
-        let (handle_border, handle) = (
-            Primitive::Quad {
-                bounds: Rectangle {
-                    x: bounds.x + handle_offset.round(),
-                    y: rail_y - style.handle_height / 2.0,
-                    width: style.handle_width,
-                    height: style.handle_height,
-                },
-                background: handle_border_color.into(),
-                border_radius: style.handle_corner_radius,
+        let handle = Primitive::Quad {
+            bounds: Rectangle {
+                x: bounds.x + handle_offset.round(),
+                y: rail_y - style.handle_height / 2.0,
+                width: style.handle_width,
+                height: style.handle_height,
             },
-            Primitive::Quad {
-                bounds: Rectangle {
-                    x: handle_bounds.x + f32::from(style.handle_border_width),
-                    y: handle_bounds.y + f32::from(style.handle_border_width),
-                    width: style.handle_width
-                        - f32::from(style.handle_border_width * 2),
-                    height: style.handle_height
-                        - f32::from(style.handle_border_width * 2),
-                },
-                background: handle_background,
-                border_radius: style.handle_corner_radius
-                    - style.handle_border_width,
-            },
-        );
+            background: handle_background,
+            border_radius: style.handle_corner_radius,
+            border_width: style.handle_border_width,
+            border_color: handle_border_color
+        };
 
         (
             Primitive::Group {
-                primitives: vec![rail_top, rail_bottom, handle_border, handle],
+                primitives: vec![rail_top, rail_bottom, handle],
             },
             if is_dragging {
                 MouseCursor::Grabbing

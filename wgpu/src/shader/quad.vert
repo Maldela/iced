@@ -5,6 +5,8 @@ layout(location = 1) in vec2 i_Pos;
 layout(location = 2) in vec2 i_Scale;
 layout(location = 3) in vec4 i_Color;
 layout(location = 4) in float i_BorderRadius;
+layout(location = 5) in float i_BorderWidth;
+layout(location = 6) in vec4 i_BorderColor;
 
 layout (set = 0, binding = 0) uniform Globals {
     mat4 u_Transform;
@@ -15,6 +17,8 @@ layout(location = 0) out vec4 o_Color;
 layout(location = 1) out vec2 o_Pos;
 layout(location = 2) out vec2 o_Scale;
 layout(location = 3) out float o_BorderRadius;
+layout(location = 4) out float o_BorderWidth;
+layout(location = 5) out vec4 o_BorderColor;
 
 void main() {
     vec2 p_Pos = i_Pos * u_Scale;
@@ -31,6 +35,8 @@ void main() {
     o_Pos = p_Pos;
     o_Scale = p_Scale;
     o_BorderRadius = i_BorderRadius * u_Scale;
+    o_BorderWidth = i_BorderWidth * u_Scale;
+    o_BorderColor = i_BorderColor;
 
     gl_Position = u_Transform * i_Transform * vec4(v_Pos, 0.0, 1.0);
 }

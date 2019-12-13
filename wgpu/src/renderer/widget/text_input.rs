@@ -56,25 +56,16 @@ impl text_input::Renderer for Renderer {
             style.border_color
         };
 
-        let border = Primitive::Quad {
-            bounds,
-            background: Background::Color(border_color),
-            border_radius: style.border_radius,
-        };
-
         let input = Primitive::Quad {
-            bounds: Rectangle {
-                x: bounds.x + f32::from(style.border_width),
-                y: bounds.y + f32::from(style.border_width),
-                width: bounds.width - f32::from(style.border_width * 2),
-                height: bounds.height - f32::from(style.border_width * 2),
-            },
+            bounds,
             background: if let Some(background) = style.background {
                 background
             } else {
                 Background::Color(Color::WHITE)
             },
-            border_radius: style.border_radius - style.border_width,
+            border_radius: style.border_radius,
+            border_width: style.border_width,
+            border_color,
         };
 
         let text = value.to_string();
@@ -116,6 +107,8 @@ impl text_input::Renderer for Renderer {
                 },
                 background: Background::Color(style.text_color),
                 border_radius: 1,
+                border_width: 0,
+                border_color: Color::BLACK,
             };
 
             (
@@ -140,7 +133,7 @@ impl text_input::Renderer for Renderer {
 
         (
             Primitive::Group {
-                primitives: vec![border, input, contents],
+                primitives: vec![input, contents],
             },
             if is_mouse_over {
                 MouseCursor::Text

@@ -1,6 +1,6 @@
 use crate::{CheckboxStyle, Primitive, Renderer};
 use iced_native::{
-    checkbox, Background, HorizontalAlignment, MouseCursor, Rectangle,
+    checkbox, HorizontalAlignment, MouseCursor, Rectangle,
     VerticalAlignment,
 };
 
@@ -21,29 +21,17 @@ impl checkbox::Renderer for Renderer {
         style: &Self::WidgetStyle,
         (label, _): Self::Output,
     ) -> Self::Output {
-        let (checkbox_border, checkbox_box) = (
-            Primitive::Quad {
-                bounds,
-                background: Background::Color(
-                    if is_mouse_over {
-                        style.get_border_hovered_color()
-                    } else {
-                        style.border_color
-                    }
-                ),
-                border_radius: style.border_radius,
+        let checkbox_box = Primitive::Quad {
+            bounds,
+            background: style.background,
+            border_radius: style.border_radius,
+            border_width: style.border_width,
+            border_color: if is_mouse_over {
+                style.get_border_hovered_color()
+            } else {
+                style.border_color
             },
-            Primitive::Quad {
-                bounds: Rectangle {
-                    x: bounds.x + style.border_width as f32,
-                    y: bounds.y + style.border_width as f32,
-                    width: bounds.width - (style.border_width * 2) as f32,
-                    height: bounds.height - (style.border_width * 2) as f32,
-                },
-                background: style.background,
-                border_radius: (style.border_radius - 1).max(0),
-            },
-        );
+        };
 
         (
             Primitive::Group {
@@ -58,9 +46,9 @@ impl checkbox::Renderer for Renderer {
                         vertical_alignment: VerticalAlignment::Center,
                     };
 
-                    vec![checkbox_border, checkbox_box, check, label]
+                    vec![checkbox_box, check, label]
                 } else {
-                    vec![checkbox_border, checkbox_box, label]
+                    vec![checkbox_box, label]
                 },
             },
             if is_mouse_over {

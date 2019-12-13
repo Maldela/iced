@@ -4,10 +4,12 @@ layout(location = 0) in vec4 v_Color;
 layout(location = 1) in vec2 v_Pos;
 layout(location = 2) in vec2 v_Scale;
 layout(location = 3) in float v_BorderRadius;
+layout(location = 4) in float v_BorderWidth;
+layout(location = 5) in vec4 v_BorderColor;
 
 layout(location = 0) out vec4 o_Color;
 
-float rounded(in vec2 frag_coord, in vec2 position, in vec2 size, float radius, float s)
+float distance(in vec2 frag_coord, in vec2 position, in vec2 size, float radius)
 {
     vec2 inner_size = size - vec2(radius, radius) * 2.0;
     vec2 top_left = position + vec2(radius, radius);
@@ -21,13 +23,15 @@ float rounded(in vec2 frag_coord, in vec2 position, in vec2 size, float radius, 
         max(max(top_left_distance.y, bottom_right_distance.y), 0)
     );
 
-    float d = sqrt(distance.x * distance.x + distance.y * distance.y);
-
-    return 1.0 - smoothstep(radius - s, radius + s, d);
+    return sqrt(distance.x * distance.x + distance.y * distance.y);
 }
 
 void main() {
-    float radius_alpha = rounded(gl_FragCoord.xy, v_Pos, v_Scale, v_BorderRadius, 0.5);
+    float distance = distance(gl_FragCoord.xy, v_Pos, v_Scale, v_BorderRadius);
+    float radius_alpha = 1.0 - smoothstep(v_BorderRadius - 0.5, v_BorderRadius + 0.5, distance);
+    float border_mix = smoothstep(v_BorderRadius - 0.5 - v_BorderWidth, v_BorderRadius + 0.5 - v_BorderWidth, distance);
 
-    o_Color = vec4(v_Color.xyz, v_Color.w * radius_alpha);
+    vec4 color = mix(v_Color, v_BorderColor, border_mix);
+
+    o_Color = vec4(color.xyz, color.w * radius_alpha);
 }

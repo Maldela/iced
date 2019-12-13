@@ -37,49 +37,33 @@ impl button::Renderer for Renderer {
             style.border_color
         };
 
-        (
-            match background {
-                None => content,
-                Some(background) => Primitive::Group {
-                    primitives: vec![
-                        Primitive::Quad {
-                            bounds: Rectangle {
-                                x: bounds.x + pressed_offset,
-                                y: bounds.y + pressed_offset,
-                                width: bounds.width - pressed_offset,
-                                height: bounds.height - pressed_offset,
-                            },
-                            background: Background::Color(border_color),
-                            border_radius: style.border_radius,
-                        },
-                        Primitive::Quad {
-                            bounds: Rectangle {
-                                x: bounds.x
-                                    + f32::from(style.border_width)
-                                    + pressed_offset,
-                                y: bounds.y
-                                    + f32::from(style.border_width)
-                                    + pressed_offset,
-                                width: bounds.width
-                                    - f32::from(style.border_width * 2)
-                                    - pressed_offset,
-                                height: bounds.height
-                                    - f32::from(style.border_width * 2)
-                                    - pressed_offset,
-                            },
-                            background,
-                            border_radius: style.border_radius
-                                - style.border_width,
-                        },
-                        content,
-                    ],
+        let pointer = if is_mouse_over {
+            MouseCursor::Pointer
+        } else {
+            MouseCursor::OutOfBounds
+        };
+
+        let primitives = Primitive::Group {
+            primitives: vec![
+                Primitive::Quad {
+                    bounds: Rectangle {
+                        x: bounds.x + pressed_offset,
+                        y: bounds.y + pressed_offset,
+                        width: bounds.width - pressed_offset,
+                        height: bounds.height - pressed_offset,
+                    },
+                    background: match background {
+                        Some(bg) => bg,
+                        None => Background::Color([0.0, 0.0, 0.0, 0.0].into()),
+                    },
+                    border_radius: style.border_radius,
+                    border_width: style.border_width,
+                    border_color,
                 },
-            },
-            if is_mouse_over {
-                MouseCursor::Pointer
-            } else {
-                MouseCursor::OutOfBounds
-            },
-        )
+                content,
+            ],
+        };
+
+        (primitives, pointer)
     }
 }

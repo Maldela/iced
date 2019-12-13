@@ -62,6 +62,8 @@ mod circle {
                     bounds: layout.bounds(),
                     background: Background::Color(Color::BLACK),
                     border_radius: self.radius,
+                    border_width: 0,
+                    border_color: Color::WHITE,
                 },
                 MouseCursor::OutOfBounds,
             )
